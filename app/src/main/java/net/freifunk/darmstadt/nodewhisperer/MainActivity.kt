@@ -65,7 +65,6 @@ import net.freifunk.darmstadt.nodewhisperer.models.GluonNode
 import net.freifunk.darmstadt.nodewhisperer.models.ScanResultListModel
 import net.freifunk.darmstadt.nodewhisperer.models.WifiScanResult
 import net.freifunk.darmstadt.nodewhisperer.models.enums.NodeStatus
-import net.freifunk.darmstadt.nodewhisperer.services.CommunityResolverService
 import net.freifunk.darmstadt.nodewhisperer.services.CommunityService
 import net.freifunk.darmstadt.nodewhisperer.services.NodeStatusService
 import net.freifunk.darmstadt.nodewhisperer.services.WifiScanService
