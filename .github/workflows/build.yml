@@ -51,19 +51,52 @@ jobs:
       - name: Upload APK Debug
         uses: actions/upload-artifact@v4
         with:
-          name: APK(s) debug generated
+          name: apk-debug
           path: ${{ env.main_project_module }}/build/outputs/apk/debug/
 
       # Noted For Output [main_project_module]/build/outputs/apk/release/
       - name: Upload APK Release
         uses: actions/upload-artifact@v4
         with:
-          name: APK(s) release generated
+          name: apk-release
           path: ${{ env.main_project_module }}/build/outputs/apk/release/
 
       # Noted For Output [main_project_module]/build/outputs/bundle/release/
       - name: Upload AAB (App Bundle) Release
         uses: actions/upload-artifact@v4
         with:
-          name: App bundle(s) AAB release generated
+          name: aab-bundles
           path: ${{ env.main_project_module }}/build/outputs/bundle/release/
+
+  release:
+    runs-on: ubuntu-22.04
+    needs: build
+    # Only run if tag pushed
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Download Artifact (Debug)
+        uses: actions/download-artifact@v4
+        with:
+          name: apk-debug
+          path: ${{ github.workspace }}/artifacts-debug
+
+      - name: Download APK (Release)
+        uses: actions/download-artifact@v4
+        with:
+          name: apk-release
+          path: ${{ github.workspace }}/artifacts-release
+
+      - name: Download App Bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: aab-bundles
+          path: ${{ github.workspace }}/artifacts-bundle
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          files: |
+            ${{ github.workspace }}/artifacts-release/app-release-unsigned.apk
+            ${{ github.workspace }}/artifacts-debug/app-debug.apk
+            ${{ github.workspace }}/artifacts-bundle/app-release.aab
