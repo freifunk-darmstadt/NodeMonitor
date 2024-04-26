@@ -11,7 +11,7 @@ android {
         applicationId = "net.freifunk.darmstadt.nodewhisperer"
         minSdk = 30
         targetSdk = 34
-        versionCode = 1
+        versionCode = 2
         versionName = "1.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
