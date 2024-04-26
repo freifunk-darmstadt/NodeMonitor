@@ -23,6 +23,6 @@
     <string name="fab_scan_stop">Stop</string>
     <string name="fab_scan_start">Start</string>
     <string name="global_unknown">Unknown</string>
-    <string name="url_help">https://darmstadt.freifunk.net/</string>
+    <string name="url_help">https://github.com/freifunk-darmstadt/NodeMonitor/blob/master/docs/data-privacy.md</string>
     <string name="msg_permission_request">Bitte erteilen Sie die benötigten Berechtigungen</string>
 </resources>
