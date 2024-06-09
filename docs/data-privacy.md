@@ -1,9 +1,9 @@
 # Datenschutzerklärung für die Android-App NodeMonitor
 
-Wir freuen uns, dass  unsere App NodeMonitor nutzen! Deine Privatsphäre und der Schutz Deiner persönlichen Daten liegen uns sehr am Herzen. Diese Datenschutzerklärung soll Dir transparent darlegen, welche Daten wir erfassen und wie wir diese verwenden.
+Wir freuen uns, dass Sie unsere App NodeMonitor nutzen! Deine Privatsphäre und der Schutz Deiner persönlichen Daten liegen uns sehr am Herzen. Diese Datenschutzerklärung soll Dir transparent darlegen, welche Daten wir erfassen und wie wir diese verwenden.
 
 Erfassung und Verwendung von Daten:
-Alle von NodeMonitor erhobenen Daten verbleiben auf Deinem Gerät. Die APp benötigt Zugriff auf die Liste von WLAN Netzen in der Umgebung und deinen Standort, um Knoten zu finden.
+Alle von NodeMonitor erhobenen Daten verbleiben auf Deinem Gerät. Die App benötigt Zugriff auf die Liste von WLAN Netzen in der Umgebung und deinen Standort, um Knoten zu finden.
 
 Kontakt:
 Wenn Sie Fragen oder Bedenken bezüglich unserer Datenschutzpraktiken haben, kontaktieren Sie uns bitte unter  info@freie-netze-suedhessen.de.
