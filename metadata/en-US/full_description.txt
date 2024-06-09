@@ -1,0 +1,2 @@
+NodeMonitor is an application that helps diagnose and resolve problems with
+Freifunk nodes using informations contained in WIFI Beacon frames

@@ -1,0 +1,2 @@
+NodeMonitor ist eine Applikation zur Diagnose von Freifunk-Knoten mittels
+Zusatzdaten in WLAN-Beacon Frames
