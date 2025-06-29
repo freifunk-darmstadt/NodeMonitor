@@ -13,7 +13,8 @@
     <string name="node_nodes_in_network">Knoten im Netz</string>
     <string name="node_title_information">Informationen</string>
     <string name="node_status_okay">Alles in Ordnung</string>
-    <string name="node_status_warning">Optimierung möglich</string>
+    <string name="node_status_mesh_only">Keine Direkte Internetverbindung</string>
+    <string name="node_status_mesh_only_description">Der Knoten ist im Mesh-Netzwerk aktiv. Ob das Mesh-Netzwerk einen Internetzugang hat, kann nicht geprüft werden.</string>
     <string name="node_status_error">Aktion erforderlich</string>
     <string name="str_unknown">Unknown</string>
     <string name="node_vpn_connected">Verbunden</string>

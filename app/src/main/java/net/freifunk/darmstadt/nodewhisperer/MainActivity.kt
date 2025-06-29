@@ -253,7 +253,7 @@ fun getSiteDomainString(node: GluonNode): String? {
 fun getColorForNodeStatus(node: GluonNode): Color {
     return when (NodeStatusService.getNodeStatus(node)) {
         NodeStatus.OK -> colorResource(R.color.green_500)
-        NodeStatus.WARNING -> colorResource(R.color.yellow_500)
+        NodeStatus.MESH_ONLY -> colorResource(R.color.yellow_500)
         else -> colorResource(R.color.red_500)
     }
 }
@@ -262,7 +262,7 @@ fun getColorForNodeStatus(node: GluonNode): Color {
 fun getIconForNodeStatus(node: GluonNode): ImageVector {
     return when (NodeStatusService.getNodeStatus(node)) {
         NodeStatus.OK -> Icons.Default.Done
-        NodeStatus.WARNING -> Icons.Default.Warning
+        NodeStatus.MESH_ONLY -> Icons.Default.Warning
         else -> Icons.Default.Close
     }
 }
@@ -386,8 +386,8 @@ fun NodeInfoBottomSheet(
                 text =
                     if (NodeStatusService.getNodeStatus(node) == NodeStatus.OK)
                         stringResource(R.string.node_status_okay)
-                    else if (NodeStatusService.getNodeStatus(node) == NodeStatus.WARNING)
-                        stringResource(R.string.node_status_warning)
+                    else if (NodeStatusService.getNodeStatus(node) == NodeStatus.MESH_ONLY)
+                        stringResource(R.string.node_status_mesh_only)
                     else
                         stringResource(R.string.node_status_error),
                 textAlign = TextAlign.Center,
@@ -397,6 +397,17 @@ fun NodeInfoBottomSheet(
                     .fillMaxWidth()
                     .padding(8.dp)
             )
+
+            if (NodeStatusService.getNodeStatus(node) == NodeStatus.MESH_ONLY) {
+                Text(
+                    text = stringResource(R.string.node_status_mesh_only_description),
+                    textAlign = TextAlign.Left,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                )
+            }
 
             Text(
                 text = stringResource(R.string.node_title_information),

@@ -23,12 +23,12 @@ class NodeStatusService {
         }
         fun getNodeStatus(gluonNode: GluonNode): NodeStatus {
             val errors = getNodeErrors(gluonNode)
-            if (errors.contains(NodeError.NO_GATEWAY)) {
+            if (errors.contains(NodeError.NO_GATEWAY) && errors.contains(NodeError.NO_NODES_IN_NETWORK)) {
                 return NodeStatus.CRITICAL
             }
 
-            if (errors.contains(NodeError.NO_NODES_IN_NETWORK)) {
-                return NodeStatus.CRITICAL
+            if (errors.contains(NodeError.NO_GATEWAY) && !errors.contains(NodeError.NO_NODES_IN_NETWORK)) {
+                return NodeStatus.MESH_ONLY
             }
 
             return NodeStatus.OK
