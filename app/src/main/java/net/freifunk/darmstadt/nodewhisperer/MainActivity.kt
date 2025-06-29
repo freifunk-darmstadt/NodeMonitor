@@ -493,12 +493,16 @@ fun ScanResultListElement(node: GluonNode) {
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            Column {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
                 Text(
                     text = node.hostname ?: stringResource(R.string.global_unknown),
                     textAlign = TextAlign.Start,
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                 )
                 Text(
                     text = node.nodeId.toString(),
