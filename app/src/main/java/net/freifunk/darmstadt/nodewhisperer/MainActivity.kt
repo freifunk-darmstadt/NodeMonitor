@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -89,6 +90,25 @@ class MainActivity : ComponentActivity() {
     fun permissionToast() {
         Toast.makeText(this, getString(R.string.msg_permission_request), Toast.LENGTH_SHORT).show()
     }
+    fun generateRawDebugInfo() =
+        "scanning_enabled=${wifiScanService.scanningEnabled.value},\n" +
+                "scanning_paused=${wifiScanService.scanningPaused.value},\n" +
+                "total_nodes=${scanResultListModel.scanResults.size},\n" +
+                "nodes=" + scanResultListModel.scanResults.joinToString(";\n") { node ->
+            "hostname=${node.hostname ?: ""},\n" +
+                    "node_id=${node.nodeId},\n" +
+                    "status=${NodeStatusService.getNodeStatus(node)},\n" +
+                    "site_code=${getSiteDomainString(node) ?: ""},\n" +
+                    "last_seen=${node.lastSeen ?: ""},\n" +
+                    "system_uptime=${node.systemUptime ?: ""},\n" +
+                    "system_load=${node.systemLoad ?: ""},\n" +
+                    "firmware_version=${node.firmwareVersion ?: ""},\n" +
+                    "vpn_connected=${node.batmanAdv?.vpnConnected ?: ""},\n" +
+                    "gateway_tq=${node.batmanAdv?.tq ?: ""},\n" +
+                    "neighbors=${node.batmanAdv?.neighbors ?: ""},\n" +
+                    "originators=${node.batmanAdv?.originators ?: ""},\n" +
+                    "community_short_name=${node.communityInformation?.shortName ?: ""}"
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -290,6 +310,21 @@ fun activityDesign(
                             Text("Knoten")
                         },
                         actions = {
+                            IconButton(onClick = {
+                                /* share debug info via share function */
+                                val sendIntent = Intent().apply {
+                                    action = Intent.ACTION_SEND
+                                    putExtra(Intent.EXTRA_TEXT, activity.generateRawDebugInfo())
+                                    type = "text/plain"
+                                }
+                                val launchBrowser = Intent.createChooser(sendIntent, null)
+                                activity.startActivity(launchBrowser)
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Share,
+                                    contentDescription = "Share"
+                                )
+                            }
                             IconButton(onClick = {
                                 /* Open darmstadt.freifunk.net */
                                 val uriUrl = Uri.parse(activity.getString(R.string.url_help))
