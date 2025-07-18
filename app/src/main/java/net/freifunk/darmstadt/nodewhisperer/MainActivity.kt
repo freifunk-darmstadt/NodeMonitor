@@ -95,39 +95,6 @@ class MainActivity : ComponentActivity() {
         Toast.makeText(this, getString(R.string.msg_permission_request), Toast.LENGTH_SHORT).show()
     }
 
-    fun generateRawDebugInfo(): String {
-        return try {
-            val wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
-            val wifiInfo = "\n" + "wifi_networks=${wifiManager.scanResults.size},\n" + wifiManager.scanResults.joinToString("\n") { result ->
-            /* wifiManager.scanResults.SSID is deprecated but still works */
-            "ssid=${result.SSID}," + "\n" +
-                    "bssid=${result.BSSID}," + "\n" +
-                    "signal=${result.level}dBm," + "\n" +
-                    "freq=${result.frequency}MHz;"
-        }
-            val gluonInfo = "scanning_enabled=${wifiScanService.scanningEnabled.value},\n" +
-                    "scanning_paused=${wifiScanService.scanningPaused.value},\n" +
-                    "total_nodes=${scanResultListModel.scanResults.size},\n" +
-                    "nodes=" + scanResultListModel.scanResults.joinToString(";\n") { node ->
-                "hostname=${node.hostname ?: ""},\n" +
-                        "node_id=${node.nodeId},\n" +
-                        "status=${NodeStatusService.getNodeStatus(node)},\n" +
-                        "site_code=${getSiteDomainString(node) ?: ""},\n" +
-                        "last_seen=${node.lastSeen ?: ""},\n" +
-                        "system_uptime=${node.systemUptime ?: ""},\n" +
-                        "system_load=${node.systemLoad ?: ""},\n" +
-                        "firmware_version=${node.firmwareVersion ?: ""},\n" +
-                        "vpn_connected=${node.batmanAdv?.vpnConnected ?: ""},\n" +
-                        "gateway_tq=${node.batmanAdv?.tq ?: ""},\n" +
-                        "neighbors=${node.batmanAdv?.neighbors ?: ""},\n" +
-                        "originators=${node.batmanAdv?.originators ?: ""},\n" +
-                        "community_short_name=${node.communityInformation?.shortName ?: ""}"
-            }
-            return gluonInfo + wifiInfo
-        } catch (e: Exception) {
-            "Error generating debug info: ${e.message}"
-        }
-    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -247,6 +214,42 @@ class MainActivity : ComponentActivity() {
                 Log.e("MainActivity", "Community file not found: ${e.message}")
                 continue
             }
+        }
+    }
+    fun generateRawDebugInfo(): String {
+        if (!haveAllPermissions()) {
+            permissionToast()
+        }
+            return try {
+                val wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
+                val wifiInfo = "\n" + "wifi_networks=${wifiManager.scanResults.size},\n" + wifiManager.scanResults.joinToString("\n") { result ->
+                    /* wifiManager.scanResults.SSID is deprecated but still works */
+                    "ssid=${result.SSID}," + "\n" +
+                            "bssid=${result.BSSID}," + "\n" +
+                            "signal=${result.level}dBm," + "\n" +
+                            "freq=${result.frequency}MHz;"
+                }
+                val gluonInfo = "scanning_enabled=${wifiScanService.scanningEnabled.value},\n" +
+                        "scanning_paused=${wifiScanService.scanningPaused.value},\n" +
+                        "total_nodes=${scanResultListModel.scanResults.size},\n" +
+                        "nodes=" + scanResultListModel.scanResults.joinToString(";\n") { node ->
+                    "hostname=${node.hostname ?: ""},\n" +
+                            "node_id=${node.nodeId},\n" +
+                            "status=${NodeStatusService.getNodeStatus(node)},\n" +
+                            "site_code=${getSiteDomainString(node) ?: ""},\n" +
+                            "last_seen=${node.lastSeen ?: ""},\n" +
+                            "system_uptime=${node.systemUptime ?: ""},\n" +
+                            "system_load=${node.systemLoad ?: ""},\n" +
+                            "firmware_version=${node.firmwareVersion ?: ""},\n" +
+                            "vpn_connected=${node.batmanAdv?.vpnConnected ?: ""},\n" +
+                            "gateway_tq=${node.batmanAdv?.tq ?: ""},\n" +
+                            "neighbors=${node.batmanAdv?.neighbors ?: ""},\n" +
+                            "originators=${node.batmanAdv?.originators ?: ""},\n" +
+                            "community_short_name=${node.communityInformation?.shortName ?: ""}"
+                }
+                return gluonInfo + wifiInfo
+            } catch (e: Exception) {
+                "Error generating debug info: ${e.message}"
         }
     }
 }
