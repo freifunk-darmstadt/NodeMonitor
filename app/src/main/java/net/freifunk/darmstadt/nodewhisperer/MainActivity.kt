@@ -2,14 +2,18 @@
 
 package net.freifunk.darmstadt.nodewhisperer
 
+import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +34,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -211,6 +216,42 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+    fun generateRawDebugInfo(): String {
+        if (!haveAllPermissions()) {
+            permissionToast()
+        }
+            return try {
+                val wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
+                val wifiInfo = "\n" + "wifi_networks=${wifiManager.scanResults.size},\n" + wifiManager.scanResults.joinToString("\n") { result ->
+                    /* wifiManager.scanResults.SSID is deprecated but still works */
+                    "ssid=${result.SSID}," + "\n" +
+                            "bssid=${result.BSSID}," + "\n" +
+                            "signal=${result.level}dBm," + "\n" +
+                            "freq=${result.frequency}MHz;"
+                }
+                val gluonInfo = "scanning_enabled=${wifiScanService.scanningEnabled.value},\n" +
+                        "scanning_paused=${wifiScanService.scanningPaused.value},\n" +
+                        "total_nodes=${scanResultListModel.scanResults.size},\n" +
+                        "nodes=" + scanResultListModel.scanResults.joinToString(";\n") { node ->
+                    "hostname=${node.hostname ?: ""},\n" +
+                            "node_id=${node.nodeId},\n" +
+                            "status=${NodeStatusService.getNodeStatus(node)},\n" +
+                            "site_code=${getSiteDomainString(node) ?: ""},\n" +
+                            "last_seen=${node.lastSeen ?: ""},\n" +
+                            "system_uptime=${node.systemUptime ?: ""},\n" +
+                            "system_load=${node.systemLoad ?: ""},\n" +
+                            "firmware_version=${node.firmwareVersion ?: ""},\n" +
+                            "vpn_connected=${node.batmanAdv?.vpnConnected ?: ""},\n" +
+                            "gateway_tq=${node.batmanAdv?.tq ?: ""},\n" +
+                            "neighbors=${node.batmanAdv?.neighbors ?: ""},\n" +
+                            "originators=${node.batmanAdv?.originators ?: ""},\n" +
+                            "community_short_name=${node.communityInformation?.shortName ?: ""}"
+                }
+                return gluonInfo + wifiInfo
+            } catch (e: Exception) {
+                "Error generating debug info: ${e.message}"
+        }
+    }
 }
 
 fun toggleScanState(wifiScanService: WifiScanService, scanResultsList: ScanResultListModel) {
@@ -290,6 +331,21 @@ fun activityDesign(
                             Text("Knoten")
                         },
                         actions = {
+                            IconButton(onClick = {
+                                /* share debug info via share function */
+                                val sendIntent = Intent().apply {
+                                    action = Intent.ACTION_SEND
+                                    putExtra(Intent.EXTRA_TEXT, activity.generateRawDebugInfo())
+                                    type = "text/plain"
+                                }
+                                val launchBrowser = Intent.createChooser(sendIntent, null)
+                                activity.startActivity(launchBrowser)
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Share,
+                                    contentDescription = "Share"
+                                )
+                            }
                             IconButton(onClick = {
                                 /* Open darmstadt.freifunk.net */
                                 val uriUrl = Uri.parse(activity.getString(R.string.url_help))
