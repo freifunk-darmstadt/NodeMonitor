@@ -1,16 +1,19 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.kotlinCompose)
 }
 
 android {
     namespace = "net.freifunk.darmstadt.nodewhisperer"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "net.freifunk.darmstadt.nodewhisperer"
         minSdk = 30
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 4
         versionName = "1.0.4"
 
@@ -33,9 +36,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
     buildFeatures {
         compose = true
     }
@@ -46,6 +46,12 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_1_8;
     }
 }
 
