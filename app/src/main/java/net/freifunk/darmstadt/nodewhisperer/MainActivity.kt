@@ -2,14 +2,18 @@
 
 package net.freifunk.darmstadt.nodewhisperer
 
+import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +34,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -70,7 +75,9 @@ import net.freifunk.darmstadt.nodewhisperer.services.NodeStatusService
 import net.freifunk.darmstadt.nodewhisperer.services.WifiScanService
 import net.freifunk.darmstadt.nodewhisperer.services.WifiScanServiceResultReceiver
 import net.freifunk.darmstadt.nodewhisperer.ui.theme.NodeWhispererTheme
+import org.json.JSONArray
 import org.json.JSONException
+import org.json.JSONObject
 import java.io.FileNotFoundException
 import java.lang.StringBuilder
 
@@ -211,6 +218,43 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+    fun generateRawDebugInfo(): String {
+        if (!haveAllPermissions()) {
+            permissionToast()
+        }
+        return try {
+            val jsonObject = JSONObject()
+            jsonObject.put("total_nodes", scanResultListModel.scanResults.size)
+            jsonObject.put("device_manufacturer", android.os.Build.MANUFACTURER)
+            jsonObject.put("device_model", android.os.Build.MODEL)
+            jsonObject.put("android_version", android.os.Build.VERSION.RELEASE)
+            jsonObject.put("permission_fine_location", checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED)
+
+            val nodesArray = JSONArray()
+            for (node in scanResultListModel.scanResults) {
+                val nodeObject = JSONObject()
+                nodeObject.put("hostname", node.hostname ?: "")
+                nodeObject.put("node_id", node.nodeId.toString())
+                nodeObject.put("status", NodeStatusService.getNodeStatus(node).toString())
+                nodeObject.put("site_code", getSiteDomainString(node) ?: "")
+                nodeObject.put("last_seen", node.lastSeen?.toString() ?: "")
+                nodeObject.put("system_uptime", node.systemUptime?.toString() ?: "")
+                nodeObject.put("system_load", node.systemLoad?.toString() ?: "")
+                nodeObject.put("firmware_version", node.firmwareVersion ?: "")
+                nodeObject.put("vpn_connected", node.batmanAdv?.vpnConnected ?: false)
+                nodeObject.put("gateway_tq", node.batmanAdv?.tq ?: 0)
+                nodeObject.put("neighbors", node.batmanAdv?.neighbors ?: 0)
+                nodeObject.put("originators", node.batmanAdv?.originators ?: 0)
+                nodeObject.put("community_short_name", node.communityInformation?.shortName ?: "")
+                nodesArray.put(nodeObject)
+            }
+
+            jsonObject.put("nodes", nodesArray)
+            jsonObject.toString(2)
+        } catch (e: Exception) {
+            JSONObject().put("error", "Error generating debug info: ${e.message}").toString()
+        }
+    }
 }
 
 fun toggleScanState(wifiScanService: WifiScanService, scanResultsList: ScanResultListModel) {
@@ -290,6 +334,21 @@ fun activityDesign(
                             Text("Knoten")
                         },
                         actions = {
+                            IconButton(onClick = {
+                                /* share debug info via share function */
+                                val sendIntent = Intent().apply {
+                                    action = Intent.ACTION_SEND
+                                    putExtra(Intent.EXTRA_TEXT, activity.generateRawDebugInfo())
+                                    type = "text/plain"
+                                }
+                                val launchBrowser = Intent.createChooser(sendIntent, null)
+                                activity.startActivity(launchBrowser)
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Share,
+                                    contentDescription = "Share"
+                                )
+                            }
                             IconButton(onClick = {
                                 /* Open darmstadt.freifunk.net */
                                 val uriUrl = Uri.parse(activity.getString(R.string.url_help))
