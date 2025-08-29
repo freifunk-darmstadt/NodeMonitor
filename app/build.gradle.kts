@@ -14,8 +14,8 @@ android {
         applicationId = "net.freifunk.darmstadt.nodewhisperer"
         minSdk = 30
         targetSdk = 36
-        versionCode = 4
-        versionName = "1.0.4"
+        versionCode = 5
+        versionName = "1.1.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
