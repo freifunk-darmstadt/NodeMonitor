@@ -152,10 +152,8 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun updateScanResultList(wifiScanResults: List<WifiScanResult>) {
-        for (node in scanResultListModel.scanResults) {
-            if (node.lastSeen?.time!! < System.currentTimeMillis() - 60000) {
-                scanResultListModel.scanResults.remove(node)
-            }
+        scanResultListModel.scanResults.removeAll {
+            it.lastSeen?.time!! < System.currentTimeMillis() - 60000
         }
 
         /* Loop through new scan results */
