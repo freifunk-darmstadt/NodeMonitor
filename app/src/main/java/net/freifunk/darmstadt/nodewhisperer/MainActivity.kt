@@ -592,27 +592,40 @@ fun ScanStatusBar(wifiScanService: WifiScanService) {
         else -> colorResource(R.color.red_500).copy(alpha = 0.3f)
     }
 
+    val throttleText = if (wifiScanService.scanThrottleEnabled.value) {
+        stringResource(R.string.wifi_scan_throttled)
+    } else {
+        null
+    }
+
     ScanStatusStripContent(
         text = stringResource(R.string.scan_status_last_scan, elapsedText),
-        color = stripColor
+        color = stripColor,
+        secondaryText = throttleText
     )
 }
 
 @Composable
-fun ScanStatusStripContent(text: String, color: Color) {
-    Row(
+fun ScanStatusStripContent(text: String, color: Color, secondaryText: String? = null) {
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(color)
             .padding(horizontal = 16.dp, vertical = 4.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = text,
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurface
         )
+        if (secondaryText != null) {
+            Text(
+                text = secondaryText,
+                style = MaterialTheme.typography.labelSmall,
+                color = colorResource(R.color.red_500)
+            )
+        }
     }
 }
 
