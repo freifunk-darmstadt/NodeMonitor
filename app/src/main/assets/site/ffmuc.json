@@ -1,0 +1,27 @@
+{
+  "site_code": "ffmuc",
+  "name": "Freifunk München",
+  "short_name": "München",
+  "domain_names": {
+    "ffdlg_dlg": "Dillingen - City",
+    "ffdon_mitte": "Freifunk Donau-Ries - Mitte",
+    "ffdon_nordwest": "Freifunk Donau-Ries - Nordwest",
+    "ffdon_sued": "Freifunk Donau-Ries - Süd",
+    "ffmuc_augsburg": "Freifunk München - Augsburg",
+    "ffmuc_freising": "Freifunk München - Freising",
+    "ffmuc_gauting": "Freifunk München - Gauting",
+    "ffmuc_muc_cty": "Freifunk München - City",
+    "ffmuc_muc_nord": "Freifunk München - Nord",
+    "ffmuc_muc_ost": "Freifunk München - Ost",
+    "ffmuc_muc_sued": "Freifunk München - Sued",
+    "ffmuc_muc_west": "Freifunk München - West",
+    "ffmuc_ulm": "Freifunk München - Ulm",
+    "ffmuc_uml_nord": "Freifunk München - Umland Nord",
+    "ffmuc_uml_ost": "Freifunk München - Umland Ost",
+    "ffmuc_uml_sued": "Freifunk München - Umland Sued",
+    "ffmuc_uml_west": "Freifunk München - Umland West",
+    "ffmuc_welt": "Freifunk München - Welt",
+    "ffwert_city": "Freifunk Wertingen - City",
+    "ffwert_events": "Freifunk Wertingen - Events"
+  }
+}
