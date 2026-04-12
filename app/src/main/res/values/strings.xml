@@ -11,6 +11,7 @@
     <string name="node_gateway">Gateway</string>
     <string name="node_neighbors">Nachbarn</string>
     <string name="node_nodes_in_network">Knoten im Netz</string>
+    <string name="node_clients">Clients</string>
     <string name="node_title_information">Informationen</string>
     <string name="node_status_okay">Alles in Ordnung</string>
     <string name="node_status_mesh_only">Keine Direkte Internetverbindung</string>

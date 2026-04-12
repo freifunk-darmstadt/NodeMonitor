@@ -243,6 +243,7 @@ class MainActivity : ComponentActivity() {
                 nodeObject.put("gateway_tq", node.batmanAdv?.tq ?: 0)
                 nodeObject.put("neighbors", node.batmanAdv?.neighbors ?: 0)
                 nodeObject.put("originators", node.batmanAdv?.originators ?: 0)
+                nodeObject.put("clients", node.batmanAdv?.clients ?: 0)
                 nodeObject.put("community_short_name", node.communityInformation?.shortName ?: "")
                 nodesArray.put(nodeObject)
             }
@@ -517,6 +518,9 @@ fun NodeInfoBottomSheet(
                 )
                 NodeInfoDialogProperty(stringResource(R.string.node_nodes_in_network),
                     node.batmanAdv!!.originators.toString()
+                )
+                NodeInfoDialogProperty(stringResource(R.string.node_clients),
+                    node.batmanAdv!!.clients.toString()
                 )
             }
         }
