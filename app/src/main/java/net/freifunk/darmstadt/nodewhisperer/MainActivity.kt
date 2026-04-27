@@ -49,10 +49,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import kotlinx.coroutines.delay
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -400,17 +405,18 @@ fun activityDesign(
                     }
                 }
             ) { innerPadding ->
-                LazyColumn(
-                    modifier = Modifier
-                        .padding(innerPadding),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-
-                ) {
-                    scanResultsList.scanResults.let {
-                        itemsIndexed(scanResultsList.scanResults) { index, item ->
-                            ScanResultListElement(
-                                node = item
-                            )
+                Column(modifier = Modifier.padding(innerPadding)) {
+                    ScanStatusBar(wifiScanService!!)
+                    LazyColumn(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        scanResultsList.scanResults.let {
+                            itemsIndexed(scanResultsList.scanResults) { index, item ->
+                                ScanResultListElement(
+                                    node = item
+                                )
+                            }
                         }
                     }
                 }
@@ -549,6 +555,85 @@ fun NodeInfoDialogProperty(name: String, content: String) {
             text = content,
             textAlign = TextAlign.Start,
         )
+    }
+}
+
+@Composable
+fun ScanStatusBar(wifiScanService: WifiScanService) {
+    val isEnabled = wifiScanService.scanningEnabled.value
+    val lastTimestamp = wifiScanService.lastScanTimestamp.value
+
+    if (!isEnabled) {
+        ScanStatusStripContent(
+            text = stringResource(R.string.scan_status_stopped),
+            color = MaterialTheme.colorScheme.surfaceVariant
+        )
+        return
+    }
+
+    if (lastTimestamp == null) {
+        ScanStatusStripContent(
+            text = stringResource(R.string.scan_status_waiting),
+            color = MaterialTheme.colorScheme.surfaceVariant
+        )
+        return
+    }
+
+    var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(1000L)
+            now = System.currentTimeMillis()
+        }
+    }
+
+    val elapsedSec = ((now - lastTimestamp) / 1000).toInt()
+    val elapsedText = if (elapsedSec < 60) {
+        stringResource(R.string.scan_status_seconds, elapsedSec)
+    } else {
+        stringResource(R.string.scan_status_minutes, elapsedSec / 60)
+    }
+
+    val stripColor = when {
+        elapsedSec < 20 -> colorResource(R.color.green_500).copy(alpha = 0.3f)
+        elapsedSec < 60 -> colorResource(R.color.yellow_500).copy(alpha = 0.3f)
+        else -> colorResource(R.color.red_500).copy(alpha = 0.3f)
+    }
+
+    val throttleText = if (wifiScanService.scanThrottleEnabled.value) {
+        stringResource(R.string.wifi_scan_throttled)
+    } else {
+        null
+    }
+
+    ScanStatusStripContent(
+        text = stringResource(R.string.scan_status_last_scan, elapsedText),
+        color = stripColor,
+        secondaryText = throttleText
+    )
+}
+
+@Composable
+fun ScanStatusStripContent(text: String, color: Color, secondaryText: String? = null) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color)
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        if (secondaryText != null) {
+            Text(
+                text = secondaryText,
+                style = MaterialTheme.typography.labelSmall,
+                color = colorResource(R.color.red_500)
+            )
+        }
     }
 }
 
