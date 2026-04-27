@@ -73,6 +73,7 @@ class WifiScanService(context: Context) {
     }
 
     fun unregisterReceiver(wifiScanServiceResultReceiver: WifiScanServiceResultReceiver) {
+        context.unregisterReceiver(wifiScanReceiver)
         this.wifiScanServiceResultReceiver = null
     }
 

@@ -86,6 +86,12 @@ class MainActivity : ComponentActivity() {
     val scanResultListModel = ScanResultListModel()
     val wifiScanService = WifiScanService(this)
     val communityService = CommunityService(this)
+    private val wifiScanReceiver = object : WifiScanServiceResultReceiver {
+        override fun onScanResultUpdate(wifiScanResults: List<WifiScanResult>) {
+            Log.d("MainActivity", "Scan results updated {${wifiScanResults.size}}")
+            updateScanResultList(wifiScanResults)
+        }
+    }
 
     fun haveAllPermissions(): Boolean {
         return checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED &&
@@ -123,12 +129,7 @@ class MainActivity : ComponentActivity() {
             requestPermissionLauncher.launch(android.Manifest.permission.ACCESS_WIFI_STATE)
         }
 
-        wifiScanService.registerReceiver(object : WifiScanServiceResultReceiver {
-            override fun onScanResultUpdate(wifiScanResults: List<WifiScanResult>) {
-                Log.d("MainActivity", "Scan results updated {${wifiScanResults.size}}")
-                updateScanResultList(wifiScanResults)
-            }
-        })
+        wifiScanService.registerReceiver(wifiScanReceiver)
 
         if (!haveAllPermissions()) {
             permissionToast()
@@ -149,6 +150,11 @@ class MainActivity : ComponentActivity() {
         if (haveAllPermissions() && wifiScanService.scanningEnabled.value && wifiScanService.scanningPaused.value) {
             wifiScanService.resumeScanning()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        wifiScanService.unregisterReceiver(wifiScanReceiver)
     }
 
     private fun updateScanResultList(wifiScanResults: List<WifiScanResult>) {
