@@ -331,7 +331,8 @@ fun activityDesign(
                     CenterAlignedTopAppBar(
                         colors = topAppBarColors(
                             containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            titleContentColor = MaterialTheme.colorScheme.primary,
+                            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            actionIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                         ),
                         title = {
                             Text("Knoten")
