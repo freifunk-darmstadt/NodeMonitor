@@ -12,6 +12,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.background
@@ -74,6 +75,7 @@ import net.freifunk.darmstadt.nodewhisperer.services.CommunityService
 import net.freifunk.darmstadt.nodewhisperer.services.NodeStatusService
 import net.freifunk.darmstadt.nodewhisperer.services.WifiScanService
 import net.freifunk.darmstadt.nodewhisperer.services.WifiScanServiceResultReceiver
+import net.freifunk.darmstadt.nodewhisperer.ui.theme.LocalCustomColorsPalette
 import net.freifunk.darmstadt.nodewhisperer.ui.theme.NodeWhispererTheme
 import org.json.JSONArray
 import org.json.JSONException
@@ -105,6 +107,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        enableEdgeToEdge()
 
         setContent {
             activityDesign(this, wifiScanService, scanResultListModel)
@@ -301,9 +305,9 @@ fun getSiteDomainString(node: GluonNode): String? {
 @Composable
 fun getColorForNodeStatus(node: GluonNode): Color {
     return when (NodeStatusService.getNodeStatus(node)) {
-        NodeStatus.OK -> colorResource(R.color.green_500)
-        NodeStatus.MESH_ONLY -> colorResource(R.color.yellow_500)
-        else -> colorResource(R.color.red_500)
+        NodeStatus.OK -> LocalCustomColorsPalette.current.successColor
+        NodeStatus.MESH_ONLY -> LocalCustomColorsPalette.current.warningColor
+        else -> MaterialTheme.colorScheme.errorContainer
     }
 }
 
@@ -333,7 +337,8 @@ fun activityDesign(
                     CenterAlignedTopAppBar(
                         colors = topAppBarColors(
                             containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            titleContentColor = MaterialTheme.colorScheme.primary,
+                            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            actionIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                         ),
                         title = {
                             Text("Knoten")
@@ -380,9 +385,9 @@ fun activityDesign(
                         },
                         containerColor =
                         if (wifiScanService!!.scanningEnabled.value)
-                            colorResource(R.color.red_500)
+                            MaterialTheme.colorScheme.errorContainer
                         else
-                            colorResource(R.color.green_500)
+                            MaterialTheme.colorScheme.primary
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.wifi_find),
